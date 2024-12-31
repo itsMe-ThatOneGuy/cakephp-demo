@@ -1,0 +1,24 @@
+CREATE TABLE properties (
+    id SERIAL PRIMARY KEY,
+    beds INT NOT NULL,
+    baths INT NOT NULL,
+    sqft INT NOT NULL,
+    price NUMERIC(10,2) NOT NULL,
+    photo VARCHAR(255) DEFAULT NULL,
+    created TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    modified TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE OR REPLACE FUNCTION update_modified_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.modified = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER set_modified_timestamp
+BEFORE UPDATE ON properties
+FOR EACH ROW
+EXECUTE PROCEDURE update_modified_column();
